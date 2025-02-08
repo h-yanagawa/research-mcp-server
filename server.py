@@ -154,28 +154,3 @@ def create_new_survey_summary(title: str, body: Optional[str] = None):
     update_survey_summary_block(new_page["id"], body or "")
     return new_page
 
-
-if __name__ == '__main__':
-    # print(get_property_definition())
-    create_new_survey_summary("Test Survey", "## テスト\n テスト本文")
-    print(get_survey_summary("194f9510-5029-80d0-ab76-edfd07d1c4c3"))
-    # props = update_survey_summary_property("194f9510-5029-80d0-ab76-edfd07d1c4c3", [
-    #     PropertyUpdate(property_name="Author", type="text", value="Dummy Author 123"),
-    # ], Context())
-    # d = notion.databases.query("194f95105029803a899ac87abefda177")
-    # children = notion.blocks.children.list("194f9510502980d0ab76edfd07d1c4c3")
-    #
-    # code_block = get_first_code_block("194f9510502980d0ab76edfd07d1c4c3")
-    # update = notion.blocks.update(code_block["id"], code={
-    #     "rich_text": [{
-    #         "type": "text",
-    #         "text": {
-    #             "content": "## テ2スdd2ト\n テ2スト2本文",
-    #         }
-    #     }],
-    #     "language": "markdown"
-    # })
-    # notion.blocks.children.append()
-    # https://www.notion.so/194f95105029803a899ac87abefda177?v=194f951050298082ba2c000c12184e66&pvs=4
-    # notion.pages.properties.retrieve("5e817eb67daa4e9795e3a5388502f803", "")
-    # notion.pages.retrieve()
