@@ -1,3 +1,16 @@
+
+.idea/
+_meta
+__pycache__/
+
+# envs
+.env.*
+.env
+
+output/
+
+
+# python
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
