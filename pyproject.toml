@@ -1,0 +1,16 @@
+[project]
+name = "research-mcp-server"
+version = "0.1.0"
+description = "Add your description here"
+authors = ["Hikari YANAGAWA <37997534+h-yanagawa@users.noreply.github.com>"]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.45.2",
+    "mcp[cli]>=1.2.1",
+    "notion-client>=2.3.0",
+    "openai>=1.61.1",
+    "pydantic>=2.10.6",
+    "python-dotenv>=1.0.1",
+    "ruamel-yaml>=0.18.10",
+]
