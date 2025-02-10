@@ -2,6 +2,8 @@
 
 This is a repository for the research project on the MCP server.
 
+<a href="https://glama.ai/mcp/servers/54ktuin739"><img width="380" height="200" src="https://glama.ai/mcp/servers/54ktuin739/badge" alt="Research Server MCP server" /></a>
+
 ## Features
 * Work as an MCP server.
 * Retrieve survey data from Notion.
