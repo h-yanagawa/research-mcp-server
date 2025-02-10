@@ -1,0 +1,21 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - notionToken
+      - notionRootDatabaseId
+    properties:
+      notionToken:
+        type: string
+        description: Your Notion integration token.
+      notionRootDatabaseId:
+        type: string
+        description: Your Notion database ID.
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'uvicorn', args: ['research_mcp.server:app', '--host', '0.0.0.0', '--port', '8000'], env: { NOTION_TOKEN: config.notionToken, NOTION_ROOT_DATABASE_ID: config.notionRootDatabaseId } })

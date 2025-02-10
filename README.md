@@ -1,5 +1,7 @@
 # Research MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@h-yanagawa/research-mcp-server)](https://smithery.ai/server/@h-yanagawa/research-mcp-server)
+
 This is a repository for the research project on the MCP server.
 
 <a href="https://glama.ai/mcp/servers/54ktuin739"><img width="380" height="200" src="https://glama.ai/mcp/servers/54ktuin739/badge" alt="Research Server MCP server" /></a>
@@ -16,6 +18,14 @@ This is a repository for the research project on the MCP server.
 * Claude Desktop Client
 
 ## How to Use
+
+### Installing via Smithery
+
+To install Research MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@h-yanagawa/research-mcp-server):
+
+```bash
+npx -y @smithery/cli install @h-yanagawa/research-mcp-server --client claude
+```
 
 1. Clone the repository.
 2. Obtain a Notion token from [Notion Integrations](https://www.notion.so/my-integrations).
