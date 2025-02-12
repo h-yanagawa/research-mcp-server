@@ -19,15 +19,6 @@ root_database_id = os.environ["NOTION_ROOT_DATABASE_ID"]
 mcp = FastMCP("Research MCP Server")
 
 
-@mcp.prompt()
-def survey() -> str:
-    return f"""
-あなたは論文のサーベイを行い、サーベイ結果をNotionに整理する役割を担う。
-
-サーベイ情報は `{root_database_id}` のデータベースで管理される。
-"""
-
-
 def get_first_code_block(block_id: str):
     children = notion.blocks.children.list(block_id)
     for child in children["results"]:
@@ -64,14 +55,14 @@ def get_first_code_block(block_id: str):
 
 
 @mcp.tool()
-def get_survey_summaries():
-    """Get survey summaries"""
+def get_survey_pages():
+    """Get survey pages"""
     return notion.databases.query(root_database_id)
 
 
 @mcp.tool()
-def get_survey_summary(page_id: str):
-    """Get survey summary"""
+def get_survey_page(page_id: str):
+    """Get survey page"""
     page = notion.pages.retrieve(page_id)
     parent = notion.blocks.retrieve(page_id)
     children = notion.blocks.children.list(page_id)
@@ -84,15 +75,17 @@ def get_survey_summary(page_id: str):
 
 
 @mcp.tool()
-def get_property_definition():
-    """Get property definition for survey summary"""
+def get_survey_page_property_definition():
+    """Get property definition for survey page"""
     return notion.databases.retrieve(root_database_id)["properties"]
 
 
 @mcp.tool()
-def update_survey_summary_property(page_id: str, updates: list[SetPageProperty], ctx: Context):
+def update_survey_page_property(page_id: str, updates: list[SetPageProperty], ctx: Context):
     """
-    Update survey summary property
+    Update survey page property
+    short_summaryは1行程度で記述する。
+    URLはArxivのリンク、あるいは論文のリンクを記述ことが望ましい。
     To know definition of properties, use `get_property_definition` tool in advance.
     """
     parent = notion.pages.retrieve(page_id)
@@ -119,14 +112,32 @@ def update_survey_summary_property(page_id: str, updates: list[SetPageProperty],
             prop[update.type] = [{"id": v} for v in update.multi_select_values]
         elif type_ == "status":
             prop[update.type] = {"id": update.status_value}
+        elif type_ == "url":
+            prop["url"] = update.url_value
+            if update.url_title_value:
+                prop["title"] = update.url_title_value
         else:
             ctx.warning(f"Property {update.property_name} is of type {type_}, which is not supported yet.")
             continue
-    return notion.pages.update(page_id, properties=properties)
+    return {
+        "result": notion.pages.update(page_id, properties=properties),
+        "property_definitions": get_survey_page_property_definition()
+    }
 
 
 @mcp.tool()
-def update_survey_summary_block(page_id: str, body: str):
+def update_survey_page_body(page_id: str, body: str):
+    """
+    Update survey summary body
+    論文は次の章立てでbodyへ要約する。JSONエスケープされたmarkdown形式で記述する。
+    それぞれの章は3パラグラフ程度とする。
+    # 論文タイトル
+    ## 1. どのような研究か？
+    ## 2. 先行研究に対する有用性？
+    ## 3. 技術や手法の"キモ"はどこか？
+    ## 4. どうやって有効だと検証した？
+    ## 5. 議論はあるか？
+    """
     code_block = get_first_code_block(page_id)
     notion.blocks.update(code_block["id"], code={
         "rich_text": [{
@@ -139,8 +150,25 @@ def update_survey_summary_block(page_id: str, body: str):
     })
     return f"Survey page body of {page_id} updated"
 
+
 @mcp.tool()
-def create_new_survey_summary(title: str, body: Optional[str] = None):
+def create_new_survey_page(title: str, body: Optional[str] = None, short_summary: Optional[str] = None):
+    """
+    Create new survey page
+    実行する前に、get_survey_pagesで既存のページが存在しないか確認すること。
+
+    short_summaryは1行程度で記述する。
+    titleは論文のタイトルを記述する。
+    論文は次の章立てで要約しbodyに記述する。JSONエスケープされたMarkdown形式で記述する。
+    それぞれの章は3パラグラフ程度とする。
+
+    # 論文タイトル
+    ## 1. どのような研究か？
+    ## 2. 先行研究に対する有用性？
+    ## 3. 技術や手法の"キモ"はどこか？
+    ## 4. どうやって有効だと検証した？
+    ## 5. 議論はあるか？
+    """
     new_page = notion.pages.create(parent={"database_id": root_database_id}, properties={
         "Title": {
             "title": [{
@@ -149,8 +177,19 @@ def create_new_survey_summary(title: str, body: Optional[str] = None):
                     "content": title
                 }
             }]
+        },
+        "Summary": {
+            "rich_text": [{
+                "type": "text",
+                "text": {
+                    "content": short_summary or "",
+                }
+            }]
         }
     })
-    update_survey_summary_block(new_page["id"], body or "")
+    update_survey_page_body(new_page["id"], body or "")
     return new_page
 
+
+if __name__ == '__main__':
+    mcp.run()

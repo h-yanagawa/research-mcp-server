@@ -7,10 +7,12 @@ class SetPageProperty(BaseModel):
     type: str = Field(..., title="Type")
     rich_text_value: Optional[str] = Field(None, title="Rich text value. It must be a plain text. Only for rich_text.")
     number_value: Optional[float] = Field(None, title="Number property value, Only for number.")
-    selection_value: Optional[str] = Field(None, title="Selection property value. It must be an option id. Only for select.")
-    multi_select_values: Optional[list[str]] = Field(None, title="Multi select property Value. they must be option ids. Only for multi_select.")
-    status_value: Optional[str] = Field(None, title="Status property value. It must be an option id. Only for status.")
+    selection_value: Optional[str] = Field(None, title="Selection property value. It must be an id. Only for select.")
+    multi_select_values: Optional[list[str]] = Field(None, title="Multi select property Value. they must be ids. Only for multi_select.")
+    status_value: Optional[str] = Field(None, title="Status property value. It must be an id. Only for status.")
     date_value: Optional[str] = Field(None, title="Date Value, Only for date.")
+    url_title_value: Optional[str] = Field(None, title="URL Title, Only for url.")
+    url_value: Optional[str] = Field(None, title="URL Value, Only for url.")
 
     def assert_type_and_value(self):
         if self.type == "rich_text" and self.rich_text_value is None:
@@ -25,3 +27,5 @@ class SetPageProperty(BaseModel):
             raise ValueError("Status value is required for status type")
         if self.type == "date" and self.date_value is None:
             raise ValueError("Date value is required for date type")
+        if self.type == "url" and self.url_value is None:
+            raise ValueError("URL value is required for url type")
